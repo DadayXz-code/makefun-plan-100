@@ -1,72 +1,254 @@
+// The plan make.fun will carry out in public.
+// Entry for the make.fun bounty "The plan make.fun will carry out in public".
+// This program writes one deterministic plan text to entry.txt in the output dir.
+// It only clears the contents of the output dir; the dir itself is never removed.
+
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const PLAN: string[] = [
-  "THE 30-DAY $100 PLAN: TURN $100 INTO THE MOST MONEY AN AI AGENT CAN, ALONE",
-  "",
-  "MISSION",
-  "Start with exactly $100 of liquid capital. End day 30 with the highest possible cash balance, measured in dollars, after all fees. The agent does everything itself: research, building, selling, buying, and reporting. No human labour, no borrowing, no gambling, no crypto leverage, no paid ads until a product has already sold.",
-  "",
-  "THE ONE RULE THAT GOVERNS EVERYTHING",
-  "Only spend money on something that has already earned money, or on a test so small that losing it changes nothing. Every dollar is either working, being tested for $5 or less, or held in reserve. If a line of work has not produced revenue by its checkpoint day, it is cut and its remaining budget moves to the winner.",
-  "",
-  "STARTING ALLOCATION OF THE $100",
-  "- $30 — Product engine: domain-free storefronts, digital product tooling, and listing fees. Most products are sold through free marketplaces, so this is mostly a buffer, not a spend.",
-  "- $25 — Traffic and validation tests: tiny, capped experiments ($3-$5 each) on platforms where buyers already search.",
-  "- $20 — Arbitrage float: buying underpriced digital goods, domains, or resale items only when a buyer is already lined up or the resale price is documented.",
-  "- $15 — Tools and subscriptions, only if a free tier cannot do the job, and only month-to-month, cancellable in one click.",
-  "- $10 — Untouchable reserve. This is the stop-loss for the whole month. It is spent only in week 4, and only to scale the single best-selling product.",
-  "Total: $100. Nothing is spent on day 1 except $0. Day 1 is research and building, not buying.",
-  "",
-  "DAILY MEASUREMENT (NON-NEGOTIABLE)",
-  "Every evening the agent records five numbers in one ledger file: cash on hand, revenue today, spend today, profit so far, and the single best-selling offer. It also records the top traffic source and the conversion rate of the best offer. Any day with zero revenue after day 7 triggers a pivot review the same evening. Any day with revenue triggers a scale decision the next morning: can this be repeated, automated, or raised in price by 10%?",
-  "",
-  "PHASE 1 — DAYS 1-3: FIND WHAT SELLS BEFORE BUILDING ANYTHING",
-  "Day 1: Map demand. List 30 problems people already pay to solve in places with visible prices: freelance marketplaces, template stores, prompt packs, spreadsheet tools, Notion templates, small business automation, and digital downloads. For each, note the price, the number of reviews, and how recently it sold. Discard anything with no visible sales in the last 30 days. Keep the top 10 by revenue evidence, not by opinion.",
-  "Day 2: Pick three niches where the agent can build in hours, not days: (1) a spreadsheet or calculator that saves a small business time, (2) a pack of ready-made templates or scripts for a popular tool, (3) a done-for-you micro-service delivered by the agent itself, such as data cleanup, lead lists, or document formatting. For each niche, write the exact offer in one sentence, the price, and the delivery time. Price the first version between $5 and $15 so the first sale comes fast.",
-  "Day 3: Build all three minimum products in one day. Each must be usable within 10 minutes of purchase, with a short readme, an example, and a clear result. No product ships without a screenshot or sample output. List all three on at least two free marketplaces each, plus one direct sales page. Total spend by end of day 3: $0, unless a marketplace charges a listing fee under $2, in which case pay it only for the single best-looking listing.",
-  "",
-  "PHASE 2 — DAYS 4-10: FIRST SALES AND THE FIRST KILL LIST",
-  "Day 4-5: Drive free traffic only. Post each product where its buyers already gather: niche forums, community groups, and marketplace search. Write one honest post per product per day, showing the result it produces, not the product itself. Answer every comment within hours. Track clicks and sales per channel. Spend $0.",
-  "Day 6: First checkpoint. Any product with zero sales and under 50 views gets its listing rewritten once: new title, new first line, lower price by 20%. Any product with a sale gets a second, complementary product the same day — a pro version, a bundle, or a done-for-you upgrade at 2-3x the price.",
-  "Day 7: First $5 test. Spend at most $5 promoting only the product with the best click-to-sale ratio, on the channel that already sent it a sale. If the $5 returns at least $10 within 48 hours, that channel becomes the default. If it returns less, kill paid promotion for the rest of the month and stay free.",
-  "Day 8-10: Double down on the winner. Improve the best seller every day: add one feature buyers asked for, add a testimonial or usage example, raise the price by $1-$2 after every 5 sales. Launch a bundle of the top two products at a 20% discount to lift average order value. Kill the worst product outright on day 10 and move its listing effort to the winner. Target by day 10: at least $40 in total revenue and at least one product selling without daily promotion.",
-  "",
-  "PHASE 3 — DAYS 11-20: SCALE THE WINNER, ADD A SECOND ENGINE",
-  "Day 11-13: Build the second engine. The winner proves what buyers want; the second engine serves the same buyers a second time. Options in order of preference: (1) a service version of the winning product, delivered by the agent for $25-$75 per job; (2) a subscription or updated pack buyers pay for monthly; (3) an affiliate or partner product that pays commission on the same traffic. The service version is preferred because it converts the agent's time, which is free, into the highest price.",
-  "Day 14: Mid-month audit. Cash, revenue, spend, and profit are reconciled against the day-10 target. If profit is negative, cut all spend to $0 and work only free channels until profit turns positive. If revenue is under $60 total, pivot the offer: change the niche, not the effort — relaunch the same skills in the second-best niche from phase 1.",
-  "Day 15-17: Service push. Take 5 service jobs at an introductory price to collect reviews fast, then raise the price 25% after each batch of 5. Every job is delivered in under 24 hours with a short report the buyer can forward to their boss or client — that report is the marketing. Ask every satisfied buyer for a review and a referral in the same message as delivery.",
-  "Day 18-20: Automate the repeatable parts. Turn the most common service requests into a self-serve product. Build a simple intake form, a price list, and a delivery checklist so each job takes half the time it took on day 15. Raise prices again: the product line now carries a standard version, a pro version, and a done-for-you service. Target by day 20: $150-$250 total revenue, at least $60 profit, and at least two income streams that sold in the last 7 days.",
-  "",
-  "PHASE 4 — DAYS 21-30: HARVEST, COMPOUND, AND PROTECT THE GAIN",
-  "Day 21-23: Spend the reserve, but only on the proven winner. Release the $10 reserve plus up to $15 of profit to scale what already sells: a second $5-$10 promotion test on the winning channel, a bundle discount for repeat buyers, and a limited-time price rise on the service tier. Every dollar of this spend must be tied to an offer that has already sold at least 10 times. Nothing new is launched in this phase.",
-  "Day 24-26: Arbitrage window, strictly disciplined. Use the $20 float only when all three conditions hold: a buyer is already identified or the resale price is documented from at least three recent sales, the expected margin after fees is at least 40%, and the item can be resold within 72 hours. One item at a time, never more than $20 in float at once, never a category the agent has not already sold in. Any item unsold after 72 hours is repriced down 25% immediately; after 7 days it is sold at cost to free the float.",
-  "Day 27-28: Raise prices and collect what is owed. Increase the best seller's price by 10-15% and watch conversion for 48 hours; if sales hold, keep the new price, if they halve, revert. Chase every unpaid invoice, every pending payout, and every marketplace balance. Convert all balances to cash before day 30 — a balance sitting in a marketplace on day 30 counts for nothing.",
-  "Day 29: Freeze. No new spending, no new launches, no new tests. Only fulfilment, delivery, and collection. Every listing is checked for broken links, every service job is delivered, every buyer gets a thank-you and a referral ask.",
-  "Day 30: Close and report. Withdraw everything, reconcile the ledger, and write the final report: starting cash $100, ending cash, total revenue, total spend, profit, best product, best channel, and the three lessons that would change the next 30 days. The month succeeds if ending cash is above $100; it succeeds well above $200; anything above $300 means the winner is worth running for another 30 days.",
-  "",
-  "RISK CONTROLS",
-  "- Never spend more than $5 on any single unproven test. Never spend more than $25 total on promotion in the month.",
-  "- Never buy inventory, stock, or a subscription before a sale proves the demand. Never pay for a tool with a free tier that does the job.",
-  "- Never hold more than $20 in the arbitrage float, and never in one item. Never touch leverage, options, margin, or borrowed money.",
-  "- Never depend on one marketplace or one channel: every product lives in at least two places, and every week at least two channels send traffic.",
-  "- Never fake reviews, testimonials, or sales numbers. One honest review is worth more than ten invented ones, and a fake review can close an account and end the month.",
-  "- If cash falls below $50 at any point, all spending stops until revenue brings it back above $70. If cash falls below $30, the plan switches to free-only work and the $10 reserve is the last money spent, only on the proven winner.",
-  "",
-  "WHEN TO STOP OR PIVOT",
-  "- Stop a product after 7 days with zero sales and under 100 total views: the market has spoken. Rewrite once, then kill it.",
-  "- Pivot the niche after day 14 if total revenue is under $60: same skills, different buyers, relaunch in 48 hours.",
-  "- Stop paid promotion permanently if any $5 test returns less than the $5 spent. Free traffic only from then on.",
-  "- Stop a service line if two consecutive jobs take more than twice the quoted time: the price is wrong or the job is wrong. Raise the price or drop the job type.",
-  "- Stop everything new in the last 3 days: day 28-30 is harvest only. A new idea on day 29 is a loss, not an opportunity.",
-  "",
-  "WHY THIS PLAN WINS",
-  "It spends the first three days learning instead of buying, so the $100 is never gambled on a guess. It launches three small bets instead of one big one, so the market picks the winner. It converts the agent's free time into the highest-priced work — services — while cheap digital products sell in the background. It kills losers on a fixed schedule instead of hoping they recover, and it only scales what has already sold. The realistic outcome is $200-$350 in ending cash: $100-$200 from digital products, $100-$200 from services, minus $25-$50 of tested spend. The plan's edge is not a clever trick; it is discipline — measure daily, kill fast, scale only winners, and never let a dollar work without evidence.",
-];
-
-const OUTPUT_DIR: string = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(OUTPUT_DIR, { recursive: true });
-for (const child of readdirSync(OUTPUT_DIR)) {
-  rmSync(join(OUTPUT_DIR, child), { recursive: true, force: true });
+const outDir: string = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+mkdirSync(outDir, { recursive: true });
+for (const child of readdirSync(outDir)) {
+  rmSync(join(outDir, child), { recursive: true, force: true });
 }
-writeFileSync(join(OUTPUT_DIR, "entry.txt"), PLAN.join("\n") + "\n", "utf8");
+
+const sections: string[] = [];
+
+sections.push(`# PLAN: TURN $100 INTO THE MOST MONEY IN 30 DAYS
+## An AI agent's self-executing operating plan
+## Budget: $100 | Horizon: 30 days | Target: $1,000+ net by Day 30
+
+## 0. THE CORE THESIS
+
+$100 is too small to win by investing and too small to survive a bad bet. The only
+reliable way to multiply it in 30 days is to convert it into revenue-generating
+output: sell a small digital product and a small service, both built and delivered
+by the agent itself, reinvesting every dollar of profit into distribution.
+The plan therefore has three engines, in priority order:
+1. A micro digital product (a paid template, checklist pack, or mini-tool) sold
+   for $9-$19, built in days 1-3 and sold from day 4 onward.
+2. A micro service (fast turnaround deliverables: research briefs, spreadsheet
+   builds, prompt packs, data cleanups) priced $25-$49 per job, sold from day 2.
+3. A reinvestment loop: every dollar of profit goes back into distribution
+   (targeted posts, small paid boosts, listing fees) until the daily revenue
+   run-rate passes $50/day.
+
+The non-negotiable rules for the whole month:
+- Never spend more than 20% of the cash on hand in one day unless that spend
+  has already returned money once.
+- Never touch leverage, options, memecoins, or any instrument that can lose
+  more than the stake. $100 cannot absorb a single zero.
+- Measure everything daily. If a channel earns nothing for 3 straight days,
+  kill it and move the effort to the best channel.
+- Keep a $20 emergency floor untouched until day 20. If the balance falls to
+  the floor, stop all paid spend and sell only with free channels.
+
+## 1. HOW THE $100 IS ALLOCATED (DAY 0)
+
+Total starting cash: $100.00. The split is fixed on day 0 and reviewed on day 10:
+
+- $25 — Distribution. Small paid boosts on the two best-performing free posts,
+  plus listing upgrades on marketplaces that charge to feature a listing.
+  Never spent before day 5; only spent after a free post has already sold once.
+- $20 — Tools and infrastructure. Domain name ($10-12/year), one month of a
+  cheap landing-page or form tool if free tiers run out, and payment fees
+  buffer. Free tiers are used first (GitHub Pages, Google Forms, Gumroad,
+  Stripe payment links).
+- $15 — Product validation. Small paid tests only: e.g. $5 to promote a poll
+  or a waitlist post to the exact buyer audience, so the product is built for
+  proven demand, not guessed demand.
+- $20 — Emergency floor. Untouched until day 20. This is the "still alive"
+  money that guarantees the agent can keep operating if the first product flops.
+- $20 — Working float for refunds and fees. Refunds are paid instantly and
+  without argument in the first 30 days; one angry buyer costs more than $19.
+
+Accounting rule: every dollar in and out is logged in a single ledger file with
+date, channel, amount, and running balance. The ledger is the source of truth;
+if the ledger and the wallet disagree, the wallet is wrong and the ledger is
+rebuilt from receipts the same day.
+`);
+
+sections.push(`## 2. PHASE 1 — VALIDATE AND BUILD (DAYS 1-3)
+
+Goal by end of day 3: one product ready to sell, one service offer live, zero
+dollars spent on ads.
+
+Day 1 — Pick the product (morning) and the service (afternoon).
+- List 10 product ideas the agent can build in under 6 hours each. Score each
+  1-5 on: (a) buyer urgency, (b) agent can build it without new skills,
+  (c) buyers already pay for similar things. Pick the top scorer; keep the
+  runner-up as the day-10 backup product.
+- Good product archetypes: a niche spreadsheet system (e.g. a freelancer
+  invoice + tax tracker), a pack of 50 ready-to-use prompts for a specific job
+  (real-estate listings, Etsy sellers, small restaurants), a Notion/Sheets
+  template for a painful workflow. Price $12.
+- Service offer: "48-hour research brief" or "spreadsheet built from your
+  messy data in 24 hours", $29 flat, 3 slots per week. Write the offer in one
+  page: what the buyer gets, what they send, delivery time, refund promise.
+- Publish both offers the same day: product on Gumroad (or equivalent) and
+  the service on one freelance marketplace plus one public post.
+
+Day 2 — Build the product, and pre-sell the service.
+- Build the full product. It must be genuinely usable, not a teaser: every
+  promised sheet, prompt, or page present and tested end to end.
+- Write the sales page: one clear headline stating the outcome, 5 bullets of
+  what is inside, one screenshot or sample page, price, and a 7-day refund line.
+- Send 10 direct outreach messages to people who publicly complained about the
+  exact problem the product solves (comments, forum posts, reviews). No spam:
+  one helpful reply plus one link, tailored to each person's words.
+
+Day 3 — Launch and measure.
+- Launch post on the two channels where the buyers already gather (for most
+  niches: X and one niche community). Post the product, the service, and one
+  free sample that proves quality.
+- End-of-day checkpoint: at least 1 sale or 3 qualified conversations, or the
+  offer is wrong. If zero interest, change the headline and the price ($12 ->
+  $7) on day 4, not the product itself.
+
+## 3. PHASE 2 — SELL AND COMPOUND (DAYS 4-14)
+
+Goal by end of day 14: $250-$400 cumulative revenue, at least one channel
+producing $20+/day, product reviews collected.
+
+Daily operating rhythm (about 6 focused hours per day):
+- Hour 1: fulfil overnight orders and answer every buyer message within 2
+  hours. A fast reply is the cheapest marketing there is.
+- Hours 2-4: distribution. Two new posts or outreach batches per day, always
+  in the channel that sold yesterday. Repurpose the best-performing post into
+  a second format (a post becomes a short thread; a thread becomes a sample
+  download).
+- Hour 5: build the next asset: a second product variant, a bundle, or an
+  upsell (e.g. product + 30-minute setup help for $29).
+- Hour 6: ledger, metrics, and one small experiment (new headline, new price,
+  new channel).
+
+Pricing ladder:
+- Days 4-7: product $12, service $29. Collect the first 5 reviews by asking
+  every buyer one question: "what almost stopped you buying?" Fix the top
+  objection on the sales page the same day.
+- Days 8-14: if 10+ sales, raise the product to $15 and add a $29 bundle
+  (product + service-lite). If fewer than 10 sales, cut to $9 and add a
+  "pay what you want" floor of $5 — volume first, margin later.
+
+Paid distribution (only from day 5, only from the $25 bucket):
+- Rule: spend $5 only on a post that already earned at least $12 organically.
+  Boost winners, never rescue losers.
+- Cap: $5/day. Stop any boost after $5 if it produced zero sales; double the
+  next boost only if the previous one returned at least 2x.
+
+Service pipeline:
+- Keep 3 service slots open per week and raise the price $10 after every 3
+  completed jobs with a 5-star outcome. By day 14 the service should be
+  $39-$49 and booked 3-5 days ahead. If it is not booked, the offer page is
+  the problem: rewrite the first two lines, not the price.
+
+Day 10 checkpoint (hard gate):
+- If cumulative revenue is under $100: kill the runner-up idea, pivot the
+  product to the niche that produced the most conversations, and move the
+  $20 emergency floor into distribution ($5/day for 4 days).
+- If revenue is $100-$250: stay the course, launch the second product variant.
+- If revenue is over $250: release the emergency floor early and put $20 into
+  the best channel.
+
+## 4. PHASE 3 — SCALE WHAT WORKS (DAYS 15-30)
+
+Goal by day 30: $1,000+ cumulative net revenue, daily run-rate $50+/day,
+and an asset (product + reviews + audience) that keeps earning after day 30.
+
+Days 15-21 — Double down.
+- 80% of effort goes to the single best channel and the single best product.
+  Everything else is maintenance only.
+- Launch the bundle as the flagship: product + second variant + service-lite
+  for $39. Bundles lift average order value without new buyers.
+- Start a tiny affiliate offer: 30% commission to anyone who sells the
+  product. Even 3-5 affiliates posting once each beats another $5 boost.
+- Add one new distribution format per week that costs nothing: a free sample
+  pack, a public teardown, or a "how I built this" post that links the product.
+
+Days 22-30 — Harvest and protect.
+- Raise prices once more if demand is steady: product $19, bundle $49.
+  Never raise price and change the offer in the same day; change one variable
+  at a time so the cause of any sales drop is known.
+- Every buyer gets one follow-up message on day 3 after purchase asking for a
+  review and offering the bundle at a $10 discount. Reviews compound; a product
+  with 20+ reviews sells itself.
+- Days 28-30: stop all new experiments. Fulfil, collect, and bank. Write the
+  30-day report: revenue by channel, cost per sale, best post, and the exact
+  next 30-day plan. The report itself becomes a free lead magnet for month two.
+
+Expected math (conservative case):
+- Product: 60 sales x $12 avg = $720 gross.
+- Service: 8 jobs x $35 avg = $280 gross.
+- Gross revenue ~$1,000; costs ~$60-70 (tools, boosts, fees); net ~$930.
+- Stretch case (one post goes modestly viral or one affiliate performs):
+  120 product sales + 12 jobs = ~$1,800 gross, ~$1,700 net.
+- Failure case (product never finds buyers): service-only revenue ~$150-250
+  gross. The $20 floor keeps the agent alive to try the runner-up product.
+
+## 5. DAILY MEASUREMENT (EVERY DAY, 15 MINUTES, NO EXCEPTIONS)
+
+Track these five numbers in the ledger, same time each day:
+1. Cash on hand (wallet balance, exact).
+2. Revenue today and cumulative, split by product / service / other.
+3. Visitors and conversion rate per channel (visitors, sales, revenue).
+4. Cost per sale per channel (spend divided by sales from that channel).
+5. Pipeline: open conversations, booked service slots, pending refunds.
+
+Daily decisions driven by the numbers:
+- A channel with 3 straight zero-revenue days is paused; its time moves to
+  the best channel.
+- A price that converts under 1% after 200 visitors is cut 25%.
+- A product with a refund rate over 10% is fixed or pulled the same day.
+- If cash on hand falls below $40 before day 20, all paid spend stops until
+  revenue rebuilds it above $60.
+
+## 6. RISK CONTROLS AND WHEN TO STOP OR PIVOT
+
+Hard stops (stop the activity immediately, no debate):
+- Any spend that would take cash below the $20 floor before day 20.
+- Any "opportunity" requiring an upfront payment over $25, a subscription, or
+  a crypto deposit. The plan never needs one.
+- Any buyer asking for work outside the published offer, or any platform
+  asking for credentials, wallet keys, or account access.
+- A refund rate above 15% or a public complaint left unanswered for 24 hours:
+  pause sales, fix the product, then relaunch.
+
+Pivot triggers (change direction, keep the cash):
+- Day 3: zero sales AND zero qualified conversations -> change headline and
+  price, not the product.
+- Day 7: under $30 revenue -> swap to the runner-up product; keep the service.
+- Day 10: under $100 revenue -> move the emergency floor into distribution
+  and cut the product price to $7.
+- Day 14: no channel above $20/day -> drop the product, sell only the service
+  at $49, and use outreach (free) as the only channel.
+- Day 21: cumulative revenue under $300 -> stop scaling, protect the cash,
+  finish the month on service-only revenue and write the post-mortem.
+
+What this plan deliberately does NOT do:
+- No day trading, no leverage, no options, no memecoins, no "10x in a week"
+  schemes. A $100 account cannot survive one bad trade, and trading is not
+  something the agent can execute better than the market.
+- No paid ads before a free post has sold once. Unproven offers do not get
+  money.
+- No building for more than 3 days before selling. A product nobody buys is
+  a hobby, not a business.
+
+## 7. THE 30-DAY CALENDAR AT A GLANCE
+
+- Days 1-3: validate, build, launch. Spend $0 on ads.
+- Days 4-7: sell, collect first reviews, first $5 boosts on proven posts.
+- Days 8-10: price ladder, second variant, day-10 hard gate.
+- Days 11-14: bundle launch, service price rise, affiliate offer.
+- Days 15-21: scale the winner, 80% effort on the best channel.
+- Days 22-27: final price rise, review collection, bundle push.
+- Days 28-30: no new experiments; fulfil, bank, report.
+
+End state on day 30: a product with reviews, a service with a waitlist, a
+ledger proving which channel earns, and $1,000+ net from a $100 start — plus
+an asset that keeps earning in month two without another $100.
+`);
+
+const plan: string = sections.join("\n");
+writeFileSync(join(outDir, "entry.txt"), plan, "utf8");
+
+
